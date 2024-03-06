@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="en"></html>
+<head>
+    <title>Wordle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script>
+        let enterCount = -1; // incremented by 5 everytime enter is pressed
+        let correctGuessed = false;
+        const wordsGuessed = [];
+
+        function appendToSqr(value) {
+            var squares = document.getElementsByClassName('square');
+            var lastNonEmptySquareIndex = -1;
+
+            if (correctGuessed) {
+                return;
+            }
+
+            // Find the index of the last square with content
+            for (var i = 0; i < squares.length; i++) {
+                if (squares[i].value !== '') {
+                    lastNonEmptySquareIndex = i;
+                }
+            }
+            
+            if (value === 'del')
+            {
+                if (lastNonEmptySquareIndex !== -1 && lastNonEmptySquareIndex !== enterCount) {
+                    squares[lastNonEmptySquareIndex].value = '';
+                    squares[lastNonEmptySquareIndex].style.backgroundColor = 'white';
+                    squares[lastNonEmptySquareIndex].focus();
+                    
+                    if (lastNonEmptySquareIndex % 5 !== 4) {
+                    squares[lastNonEmptySquareIndex + 1].disabled = true;
+                    }
+                }
+                return;
+
+            }
+            else if (value === 'enter') {
+                if ((lastNonEmptySquareIndex+1)%5 == 0) {
+                    //enterCount +=5;
+                    const dif = lastNonEmptySquareIndex%5;
+                    const rowStartIndex = lastNonEmptySquareIndex - dif;
+                    let guessT = '';
+                    
+                    for (let l = rowStartIndex; l < rowStartIndex + 5; l++) {
+                        guessT += squares[l].value;
+                    }
+                    if (wordsGuessed.includes(guessT)) {
+                        alert("Already Guessed Word");
+                        return;
+                    }
+                    else {
+                        checkWord(rowStartIndex);
+                        enterCount +=5;
+                    }
+                    
+                }
+                else {
+                    alert("Not enough letters");
+                }
+            }
+            
+            for (var i = 0; i < squares.length; i++) {
+                if (value !== 'enter' && value !== 'del') {
+                    if (squares[i].value === '') {
+                    squares[i].value = value;
+                    //Move focus to the next input box
+
+                    // call getNextSquare() to find next index, if it is on the next row, dont allow user to enter a value
+                    if (i < squares.length - 1) {
+                        if (i !== 4 && i !== 9 && i !== 14 && i !== 19 && i !== 24) {
+                            squares[i + 1].disabled = false;
+                            squares[i + 1].value = '';
+                            squares[i + 1].focus();
+                        }
+                    }
+                       break;
+                    }
+                    
+                }
+            }
+        }
+
+        function checkWord(startIndex) {
+            var squares = document.getElementsByClassName('square');
+            var keyboardButtons = document.getElementsByClassName('letters');
+            const correct = word.toUpperCase();
+            let guess = '';
+
+            for (let i = startIndex; i < startIndex + 5; i++) {
+                const letID = squares[i].value.toLowerCase();
+                squares[i].value = squares[i].value.toUpperCase();
+                const currentButton = keyboardButtons[letID];
+                
+                if (squares[i].value === correct[i - startIndex]) {
+                    squares[i].style.color = 'white';
+                    squares[i].style.backgroundColor = '#6ca965';
+                    currentButton.style.backgroundColor = '#6ca965';
+                    currentButton.style.color = 'white';
+                }
+                else if (correct.includes(squares[i].value)) {
+                    squares[i].style.color = 'white';
+                    squares[i].style.backgroundColor = '#c8b635';
+                    currentButton.style.backgroundColor = '#c8b635'
+                    currentButton.style.color = 'white'
+                }
+                else {
+                    squares[i].style.color = 'white';
+                    squares[i].style.backgroundColor = '#787c7f';
+                    currentButton.style.backgroundColor = '#787c7f'
+                    currentButton.style.color = 'white'
+                }
+                guess += squares[i].value;
+                squares[i].readOnly = true;
+            }
+            wordsGuessed.push(guess);
+
+            let fullCorrect = true;
+
+            for (let i = startIndex; i < startIndex + 5; i++) {
+                squares[i].value = squares[i].value.toUpperCase();
+                
+                if (squares[i].value !== correct[i - startIndex]) {
+                    fullCorrect = false;
+                }
+            }
+
+            if (fullCorrect) {
+                setTimeout(function() {
+                    alert("You guessed the word!");
+                }, 750);
+                correctGuessed = true;
+            }
+            else if (wordsGuessed.length === 6) {
+                setTimeout(function() {
+                    alert("The word was " + correct);
+                }, 750);
+            }
+            else {
+                squares[startIndex+5].disabled = false;
+            }
+
+        }
+
+        function getNextSquare(currentIndex) {
+            const allSquares = document.querySelectorAll('.square');
+            let nextIndex = currentIndex + 1;
+
+            if (nextIndex < allSquares.length && nextIndex !== 5 && nextIndex !== 10 && nextIndex !== 15 && nextIndex !== 20 && nextIndex !== 25) {
+                if (enterCount === -1) {
+                    return allSquares[nextIndex];
+                }
+                else if (enterCount === 4) {
+                    return allSquares[nextIndex + 5];
+                }
+                else if (enterCount === 9) {
+                    return allSquares[nextIndex + 10];
+                }
+                else if (enterCount === 14) {
+                    return allSquares[nextIndex + 15];
+                }
+                else if (enterCount === 19) {
+                    return allSquares[nextIndex + 20];
+                }
+                else if (enterCount === 24) {
+                    return allSquares[nextIndex + 25]
+                }
+            }
+            return null;
+
+        }
+
+        function handleInput(event) {
+            const input = event.key.toUpperCase();
+
+            if (/^[A-Z]$/.test(input)) {
+                event.preventDefault();
+                appendToSqr(input);
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                appendToSqr('enter');
+            } else if (event.key === 'Backspace') {
+                event.preventDefault();
+                appendToSqr('del');
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+        
+        const squaresContainer = document.getElementById('squares-container');
+        getRandomWord();
+
+        function getRandomWord() {
+            fetch(
+                'https://random-word-api.herokuapp.com/word?length=5')
+                .then((response) => {
+                    return response.json();
+                })
+                .then ((res) => {
+                    word = res[0];
+                })
+                .catch((err) => {
+                    alert("Word is not recongnized");
+                    console.error(err);
+                })
+        }
+
+        for (let i = 0; i < 6; i++) {
+            const row = document.createElement('div');
+            row.classList.add('row');
+
+        for (let j = 0; j < 5; j++) {
+            const square = document.createElement('input');
+            square.type = 'text';
+            square.classList.add('square');
+            square.maxLength = 1;
+            if (i === 0 && j === 0)
+            {
+                square.disabled = false;
+                square.autofocus = true;
+            }
+            else {
+                square.disabled = true;
+            }
+            square.addEventListener('keydown', function () {
+                handleInput(event);
+        });
+
+            row.appendChild(square);
+        }
+
+            squaresContainer.appendChild(row);
+        }
+        const titleTop = document.querySelector('.titletop');
+
+            // Add event listener to reload the page when the title is clicked
+            titleTop.addEventListener('click', function () {
+                location.reload();
+            });
+
+    });
+
+    </script>
+</head>
+<body>
+    <div class="titletop">
+       WORDLE
+    </div>
+    <br>
+    <br>
+    <div id="squares-container" class="grid-container"></div>
+    
+    <div class="keyboardkeys">
+        <button id="q" class="letters" onclick="appendToSqr('Q')">Q</button>
+        <button id="w" class="letters" onclick="appendToSqr('W')">W</button>
+        <button id="e" class="letters" onclick="appendToSqr('E')">E</button>
+        <button id="r" class="letters" onclick="appendToSqr('R')">R</button>
+        <button id="t" class="letters" onclick="appendToSqr('T')">T</button>
+        <button id="y" class="letters" onclick="appendToSqr('Y')">Y</button>
+        <button id="u" class="letters" onclick="appendToSqr('U')">U</button>
+        <button id="i" class="letters" onclick="appendToSqr('I')">I</button>
+        <button id="o" class="letters" onclick="appendToSqr('O')">O</button>
+        <button id="p" class="letters" onclick="appendToSqr('P')">P</button>
+
+        <button id="a" class="letters" onclick="appendToSqr('A')">A</button>
+        <button id="s" class="letters" onclick="appendToSqr('S')">S</button>
+        <button id="d" class="letters" onclick="appendToSqr('D')">D</button>
+        <button id="f" class="letters" onclick="appendToSqr('F')">F</button>
+        <button id="g" class="letters" onclick="appendToSqr('G')">G</button>
+        <button id="h" class="letters" onclick="appendToSqr('H')">H</button>
+        <button id="j" class="letters" onclick="appendToSqr('J')">J</button>
+        <button id="k" class="letters" onclick="appendToSqr('K')">K</button>
+        <button id="l" class="letters" onclick="appendToSqr('L')">L</button>
+
+        <button id="enter" class="letters" onclick="appendToSqr('enter')">ENTER</button>
+        <button id="z" class="letters" onclick="appendToSqr('Z')">Z</button>
+        <button id="x" class="letters" onclick="appendToSqr('X')">X</button>
+        <button id="c" class="letters" onclick="appendToSqr('C')">C</button>
+        <button id="v" class="letters" onclick="appendToSqr('V')">V</button>
+        <button id="b" class="letters" onclick="appendToSqr('B')">B</button>
+        <button id="n" class="letters" onclick="appendToSqr('N')">N</button>
+        <button id="m" class="letters" onclick="appendToSqr('M')">M</button>
+        <button id="delete" class="letters" onclick="appendToSqr('del')">DEL</button>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+body{
+    background-color:rgb(255, 255, 255);
+    color: white;
+}
+
+.titletop{
+    text-align: center;
+    font-size: 2.0rem;
+    font-weight: 600;
+    /*font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Verdana, sans-serif;
+    */border-bottom: 0.1px solid;
+    color: black;
+    cursor: pointer;
+}
+
+.keyboardkeys{
+    text-align: center;
+    width: 550px;
+    height: 100px;
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.letters{
+    background-color:rgb(215, 219, 221);
+    font-weight: 700;
+    font-size: medium;
+    text-align: center;
+    width: 45px;
+    height: 60px;
+    border-radius: 5px;
+    margin: 3px;
+    cursor: pointer;
+    transition: background-color 0.9s, color 0.9s;
+    border: none;
+    
+}
+#enter {
+    width: 90px; /* Adjust the width based on your preference */
+    white-space: normal; /* Allow text to wrap */
+}
+
+.container{
+    text-align: center;
+    width: 10px;
+    height: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.square{
+    font-size: x-large;
+    font-weight: bold;
+    text-align: center;
+    width: 45px;
+    height: 45px;
+    color: black;
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.277);
+    margin: 3px;
+    text-transform: uppercase;
+    transition: background-color 0.9s, color 0.9s;
+}
+
+.square:focus{
+    outline: none;
+    caret-color: transparent;
+}
+
+.row{
+    display:flex;
+    justify-content: center;
+}
